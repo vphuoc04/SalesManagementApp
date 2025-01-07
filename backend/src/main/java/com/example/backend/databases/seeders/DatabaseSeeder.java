@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.modules.admins.entities.Admin;
+import com.example.backend.modules.admins.repositories.AdminRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,6 +24,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Transactional
     @Override
@@ -41,7 +45,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             admin.setPhone("0123456789");
             admin.setImage(null);
 
-            entityManager.persist(admin);
+            adminRepository.save(admin);
         }
     }
 
