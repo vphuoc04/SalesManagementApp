@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 // Screens
 import 'package:dashboard_mobile/repositories/auth_repository.dart';
-import 'package:dashboard_mobile/screens/dashboard_screen.dart';
+import 'package:dashboard_mobile/screens/layout_screen.dart';
+
+// Services
 import 'package:dashboard_mobile/services/token_service.dart';
 
 // Constants
@@ -26,6 +28,8 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
   bool keyboardVisible = false;
   late AnimationController animationController;
   late Animation<double> animation;
+
+  int? id;
 
   @override
   void initState() {
@@ -84,10 +88,10 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
+          MaterialPageRoute(builder: (context) => LayoutScreen(id: id)),
         );
 
-        print('Login successful: ${result['token']}');
+        print('Login successful: $token}');
       } 
       else {
         ScaffoldMessenger.of(context).showSnackBar(

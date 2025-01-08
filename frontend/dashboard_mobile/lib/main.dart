@@ -1,23 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Services
+import 'package:dashboard_mobile/services/token_service.dart';
 
 // Screens
 import 'package:dashboard_mobile/screens/login_screen.dart';
-import 'package:dashboard_mobile/screens/dashboard_screen.dart';
-void main() {
-  runApp(const MyApp());
+import 'package:dashboard_mobile/screens/layout_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  String? token = await TokenService.loadToken();
+  int? adminId;
+
+  if (token != null) {
+    final check = await SharedPreferences.getInstance();
+    adminId = check.getInt('id');
+    print('Admin id check: $adminId');
+  }
+
+  runApp(MyApp(initialRoute: token == null ? '/' : '/dashboard', id: adminId));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  final int? id; 
+
+  const MyApp(
+    {super.key, required this.initialRoute, this.id}
+  );
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: initialRoute,
       routes: {
         '/': (context) => LoginScreen(),
-        '/dashboard': (context) => DashboardScreen()
+        '/dashboard': (context) => id == null ? LoginScreen() : LayoutScreen(id: id!)
       },
     );
   }
