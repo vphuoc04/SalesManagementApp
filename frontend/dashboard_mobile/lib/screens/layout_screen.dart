@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 // Screens
 import 'package:dashboard_mobile/screens/dashboard_screen.dart';
+import 'package:dashboard_mobile/screens/profile_screen.dart';
 
 // Components
-import 'package:dashboard_mobile/widgets/layout/custom_navigation_bar.dart';
+import 'package:dashboard_mobile/widgets/layout/custom_sidebar.dart';
 
 class LayoutScreen extends StatefulWidget {
   final int? id;
@@ -23,11 +24,12 @@ class _LayoutScreenState extends State<LayoutScreen> {
   void initState() {
     super.initState();
     screens = <Widget>[
-      DashboardScreen()
+      DashboardScreen(),
+      ProfileScreen(),
     ];
   }
 
-  void onItemTapped(int index) {
+  void onSidebarItemTapped(int index) {
     setState(() {
       selectedIndex = index;
     });
@@ -36,17 +38,18 @@ class _LayoutScreenState extends State<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Row(
         children: [
+          // Sidebar
+          CustomSidebar(
+            selectedIndex: selectedIndex,
+            onItemTapped: onSidebarItemTapped,
+          ),
+          // Main content
           Expanded(
-            child: screens[selectedIndex]
-          )
+            child: screens[selectedIndex],
+          ),
         ],
-      ),
-      bottomNavigationBar: CustomNavigationBar(
-        selectedIndex: selectedIndex,
-        onItemTapped: onItemTapped,
       ),
     );
   }

@@ -40,6 +40,11 @@ public class SecurityConfig {
                 )
                 .permitAll()
 
+                .requestMatchers(
+                    "/api/v1/admin/{id}"
+                )
+                .permitAll()
+
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session 

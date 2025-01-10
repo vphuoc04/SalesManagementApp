@@ -1,12 +1,10 @@
 package com.example.backend.modules.admins.controllers;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,23 +19,18 @@ public class AdminController {
     @Autowired
     private AdminRepository adminRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    @GetMapping("admin/{id}")
+    public ResponseEntity<?> admin(@PathVariable("id") Long id) {
+        Admin admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found!"));
 
-    @GetMapping("admin")
-    public ResponseEntity<?> admin() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.info(email);
-
-        Admin admin = adminRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Admin not found!"));
-
-        AdminResource adminResource = new AdminResource(
-            admin.getId(), 
-            admin.getEmail(), 
-            admin.getFirstName(), 
-            admin.getMiddleName(), 
-            admin.getLastName(), 
-            admin.getPhone()
-        );
+        AdminResource adminResource = AdminResource.builder()
+            .id(admin.getId())
+            .email(admin.getEmail())
+            .firstName(admin.getFirstName())
+            .middleName(admin.getMiddleName())
+            .lastName(admin.getLastName())
+            .phone(admin.getPhone())
+            .build();
 
         SuccessResource<AdminResource> response = new SuccessResource<>("Success", adminResource);
 

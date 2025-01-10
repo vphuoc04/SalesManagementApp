@@ -34,7 +34,7 @@ public class JwtService {
         
         return Jwts.builder()
             .setSubject(String.valueOf(adminId))
-            .claim("email: ", email)
+            .claim("email", email)
             .setIssuer(jwtConfig.getIssuer())
             .setIssuedAt(now)
             .setExpiration(expiryDate)

@@ -43,14 +43,15 @@ public class AdminService extends BaseService implements AdminServiceInterface {
                 throw new BadCredentialsException("Incorrect email or password!");
             }
 
-            AdminResource adminResource = new AdminResource(
-                admin.getId(), 
-                admin.getEmail(),
-                admin.getFirstName(),
-                admin.getMiddleName(),
-                admin.getLastName(),
-                admin.getPhone()
-            );
+            AdminResource adminResource = AdminResource.builder()
+                .id(admin.getId())
+                .email(admin.getEmail())
+                .firstName(admin.getFirstName())
+                .middleName(admin.getMiddleName())
+                .lastName(admin.getLastName())
+                .phone(admin.getPhone())
+                .build();
+            
             String token = jwtService.generateToken(admin.getId(), admin.getEmail());
 
             return new LoginResource(token, adminResource);
