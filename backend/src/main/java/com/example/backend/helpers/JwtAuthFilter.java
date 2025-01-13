@@ -103,6 +103,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 return;
             }
+
+            if(jwtService.isBlacklistedToken(jwt)){
+                sendErrorResponse(response, 
+                    request, 
+                    HttpServletResponse.SC_UNAUTHORIZED, 
+                    "Authentication failed!", 
+                    "Token has been blacklisted!"
+                );
+                return;
+            }
     
             adminId = jwtService.getAdminIdFromJwt(jwt);
     

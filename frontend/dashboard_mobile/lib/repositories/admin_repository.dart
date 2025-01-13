@@ -1,44 +1,13 @@
-import 'dart:convert';
-
-// Models
-import 'package:dashboard_mobile/models/admin.dart';
-
 // Services
-import 'package:dashboard_mobile/services/admin_service.dart';
-import 'package:dashboard_mobile/services/token_service.dart';
+import 'package:dashboard_mobile/services/api_service.dart';
 
 class AdminRepository {
-  final AdminService adminService = AdminService();
+  final ApiService apiService = ApiService();
 
-  Future<Admin> getAdminById(int? id) async {
-    if (id == null) {
-      throw Exception('Admin ID is null');
-    }
-
-    String? token = await TokenService.loadToken();  
-    print("Token for get data: $token");
-    if (token == null) {
-      throw Exception('Token is null. Please log in again.');
-    }
-
-    try {
-      final response = await adminService.getAdminById(id, token: token);
-      print("API Response: ${response.body}");
-      if (response.statusCode == 200) {
-        final decodedResponse = utf8.decode(response.bodyBytes);
-        final data = json.decode(decodedResponse);
-        final adminData = data['data'];
-        if (adminData == null) {
-          throw Exception('Admin data is null.');
-        }
-        return Admin.fromJson(adminData);
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Failed to load admin data!');
-      }
-    } catch (error) {
-      print("Error in AdminRepository.getAdminById: $error");
-      throw Exception('An error occurred while fetching admin data!');
-    }
+  Future<dynamic> getAdminById(int id, {required String token}) {
+    return apiService.get(
+      'admin/$id',
+      headers: {'Authorization': 'Bearer $token'}, 
+    );
   }
 }

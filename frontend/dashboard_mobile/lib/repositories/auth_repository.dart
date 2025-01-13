@@ -1,53 +1,25 @@
-import 'dart:convert';
-import 'package:dashboard_mobile/services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// Services
+import 'package:dashboard_mobile/services/api_service.dart';
 
 class AuthRepository {
-  final AuthService authService = AuthService();
+  final ApiService apiService = ApiService();
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
-    final response = await authService.login(email, password);
+  Future<dynamic> login(String email, String password) {
+    return apiService.post(
+      'auth/login',
+      {
+        'email': email,
+        'password': password,
+      },
+    );
+  }
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);  
-
-      final adminData = data['admin'];
-
-      if (adminData == null) {
-        print("Error: Admin data is null.");
-        return {
-          'success': false,
-          'message': 'Admin data is missing.',
-        };
+  Future<dynamic> logout(String token) {
+    return apiService.get(
+      'auth/logout',
+      headers: {
+        'Authorization': 'Bearer $token'
       }
-
-      print("Token: ${data['token']}");
-      print("Admin id: ${adminData['id']}");
-
-      final sharedPrefs = await SharedPreferences.getInstance();
-      await sharedPrefs.setString('token', data['token']);
-      await sharedPrefs.setInt('id', adminData['id']);
-
-      return {
-        'success': true,
-        'token': data['token'],
-        'admin': {
-          'id': adminData['id']
-        },
-      };
-    } 
-    else if (response.statusCode == 422) {
-      final error = json.decode(response.body);
-      return {
-        'success': false,
-        'message': error['errors']['message'],
-      };
-    } 
-    else {
-      return {
-        'success': false,
-        'message': 'Unexpected error occurred',
-      };
-    }
+    );
   }
 }

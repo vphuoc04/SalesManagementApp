@@ -4,11 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Models
 import 'package:dashboard_mobile/models/admin.dart';
 
-// Repositories
-import 'package:dashboard_mobile/repositories/admin_repository.dart';
-
 // Services
 import 'package:dashboard_mobile/services/auth_service.dart';
+import 'package:dashboard_mobile/services/admin_service.dart';
 
 // Screens
 import 'package:dashboard_mobile/screens/login_screen.dart';
@@ -19,7 +17,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final AdminRepository adminRepository = AdminRepository();
+  final AdminService adminService = AdminService();
   final AuthService authService = AuthService();
 
   Admin? adminData;
@@ -53,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       print("Fetching admin data for ID: $adminId with Token: $token");
-      final Admin result = await adminRepository.getAdminById(adminId);
+      final Admin result = await adminService.getAdminById(adminId);
       setState(() {
         adminData = result; 
       });
@@ -87,11 +85,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () async {
-                        await authService.logout();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
+                        bool logoutSuccess = await authService.logout();
+                        if (logoutSuccess) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Logout failed. Please try again.")),
+                          );
+                        }
                       },
                       child: Text('Logout'),
                     ),

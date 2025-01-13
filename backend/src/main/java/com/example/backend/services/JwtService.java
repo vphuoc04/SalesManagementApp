@@ -5,9 +5,11 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.config.JwtConfig;
+import com.example.backend.modules.admins.repositories.BlacklistedTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,6 +22,9 @@ import io.jsonwebtoken.security.SignatureException;
 public class JwtService {
     private final JwtConfig jwtConfig;
     private final Key key;
+
+    @Autowired
+    private BlacklistedTokenRepository blacklistedTokenRepository;
 
     public JwtService(
         JwtConfig jwtConfig
@@ -93,6 +98,9 @@ public class JwtService {
         return jwtConfig.getIssuer().equals(tokenIssuer);
     }
 
+    public boolean isBlacklistedToken(String token) {
+        return blacklistedTokenRepository.existsByToken(token);
+    }
 
     public Claims getAllClaimsFromToken(String token) {
         try {

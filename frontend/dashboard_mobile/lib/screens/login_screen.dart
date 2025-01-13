@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 // Screens
-import 'package:dashboard_mobile/repositories/auth_repository.dart';
 import 'package:dashboard_mobile/screens/layout_screen.dart';
 
 // Services
 import 'package:dashboard_mobile/services/token_service.dart';
+import 'package:dashboard_mobile/services/auth_service.dart';
 
 // Constants
 import 'package:dashboard_mobile/constants/strings.dart';
@@ -23,7 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final AuthRepository authRepository = AuthRepository();
+  final AuthService authService = AuthService();
 
   bool keyboardVisible = false;
   late AnimationController animationController;
@@ -69,7 +69,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
     }
 
     try {
-      final result = await authRepository.login(email, password);
+      final result = await authService.login(email, password);
 
       if (result['success']) {
         String token = result['token'];
@@ -91,7 +91,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
           MaterialPageRoute(builder: (context) => LayoutScreen(id: id)),
         );
 
-        print('Login successful: $token}');
+        print('Login successful: $token');
       } 
       else {
         ScaffoldMessenger.of(context).showSnackBar(
