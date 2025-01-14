@@ -53,10 +53,10 @@ public class AdminService extends BaseService implements AdminServiceInterface {
                 .build();
             
             String token = jwtService.generateToken(admin.getId(), admin.getEmail());
+            String refreshToken = jwtService.generateRefreshToken(admin.getId(), admin.getEmail());
 
-            return new LoginResource(token, adminResource);
-        }
-        catch (BadCredentialsException e) {
+            return new LoginResource(token, refreshToken, adminResource);
+        } catch (BadCredentialsException e) {
             logger.error("Authentication error: " + e.getMessage());
             Map<String, String> errors = new HashMap<>();
             errors.put("Message: ", e.getMessage());

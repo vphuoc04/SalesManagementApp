@@ -1,22 +1,27 @@
 package com.example.backend.services;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.config.JwtConfig;
+import com.example.backend.modules.admins.entities.RefreshToken;
 import com.example.backend.modules.admins.repositories.BlacklistedTokenRepository;
+import com.example.backend.modules.admins.repositories.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 
 @Service
 public class JwtService {
@@ -25,6 +30,9 @@ public class JwtService {
 
     @Autowired
     private BlacklistedTokenRepository blacklistedTokenRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     public JwtService(
         JwtConfig jwtConfig
@@ -45,6 +53,35 @@ public class JwtService {
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
+    }
+
+    public String generateRefreshToken(Long adminId, String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationRefreshToken());
+
+        String refreshToken = UUID.randomUUID().toString();
+
+        LocalDateTime localExpiryDate = expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByAdminId(adminId);
+
+        if (optionalRefreshToken.isPresent()) {
+            RefreshToken dbRefreshToken = optionalRefreshToken.get();
+
+            dbRefreshToken.setRefreshToken(refreshToken);
+            dbRefreshToken.setExpiryDate(localExpiryDate);
+            refreshTokenRepository.save(dbRefreshToken);
+
+        } else {
+            RefreshToken insertRefreshToken = new RefreshToken();
+
+            insertRefreshToken.setRefreshToken(refreshToken);
+            insertRefreshToken.setExpiryDate(localExpiryDate);
+            insertRefreshToken.setAdminId(adminId);
+            refreshTokenRepository.save(insertRefreshToken);
+        }
+
+        return refreshToken;
     }
 
     public String getAdminIdFromJwt(String token){
@@ -73,7 +110,7 @@ public class JwtService {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         }
-        catch (SignatureException e) {
+        catch (Exception e) {
             return false;
         }
     }
@@ -85,11 +122,10 @@ public class JwtService {
 
     public boolean isTokenExpired(String token){
         try {
-            Date expiration = getClaimFromToken(token, Claims::getExpiration);
-            return expiration.after(new Date());
-            
-        } catch (Exception e){
-            return true;
+            Claims claims = getAllClaimsFromToken(token);
+            return claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
         }
     } 
 
@@ -100,6 +136,21 @@ public class JwtService {
 
     public boolean isBlacklistedToken(String token) {
         return blacklistedTokenRepository.existsByToken(token);
+    }
+
+    public boolean isRefreshTokenValid(String token) {
+        try {
+            RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(
+                () -> new RuntimeException("Refresh token does not exist!")
+            );
+
+            LocalDateTime expirationLocalDateTime = refreshToken.getExpiryDate();
+            Date expiration = Date.from(expirationLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+            return expiration.after(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public Claims getAllClaimsFromToken(String token) {

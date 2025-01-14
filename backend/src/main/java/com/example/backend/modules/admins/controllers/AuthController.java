@@ -1,5 +1,7 @@
 package com.example.backend.modules.admins.controllers;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +13,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.modules.admins.entities.RefreshToken;
+import com.example.backend.modules.admins.repositories.RefreshTokenRepository;
 import com.example.backend.modules.admins.requests.BlacklistTokenRequest;
 import com.example.backend.modules.admins.requests.LoginRequest;
+import com.example.backend.modules.admins.requests.RefreshTokenRequest;
 import com.example.backend.modules.admins.resources.LoginResource;
+import com.example.backend.modules.admins.resources.RefreshTokenResource;
 import com.example.backend.modules.admins.services.impl.BlacklistService;
 import com.example.backend.modules.admins.services.interfaces.AdminServiceInterface;
 import com.example.backend.resources.MessageResourece;
 import com.example.backend.resources.ResponseResource;
+import com.example.backend.services.JwtService;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +36,12 @@ public class AuthController {
 
     @Autowired
     private BlacklistService blacklistService;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     public AuthController(
         AdminServiceInterface adminService
@@ -76,4 +89,27 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(new MessageResourece("Network error!"));
         }
     }
+
+    @PostMapping("refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        if(!jwtService.isRefreshTokenValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResourece("Refresh token is invalid!"));
+        }
+
+        Optional<RefreshToken> dbRefreshTokenOptional = refreshTokenRepository.findByRefreshToken(refreshToken);
+
+        if(dbRefreshTokenOptional.isPresent()) {
+            RefreshToken dbRefreshToken = dbRefreshTokenOptional.get();
+            Long adminId = dbRefreshToken.getAdminId();
+            String email = dbRefreshToken.getAdmin().getEmail();
+
+            String newToken = jwtService.generateToken(adminId, email);
+            String newRefreshToken = jwtService.generateRefreshToken(adminId, email);
+
+            return ResponseEntity.ok(new RefreshTokenResource(newToken, newRefreshToken));
+        }
+        return ResponseEntity.internalServerError().body(new MessageResourece("Network error!"));
+    } 
 }

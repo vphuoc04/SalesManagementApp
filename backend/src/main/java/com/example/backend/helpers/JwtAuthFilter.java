@@ -36,7 +36,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         @NonNull HttpServletRequest request
     ){
         String path = request.getRequestURI();
-        return path.startsWith("/api/v1/auth/login");
+        return path.startsWith("/api/v1/auth/login") ||
+        path.startsWith("/api/v1/auth/refresh");
     }
 
     @Override
@@ -74,7 +75,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
     
-            if(!jwtService.isTokenExpired(jwt)){
+            if(jwtService.isTokenExpired(jwt)){
                 sendErrorResponse(response, 
                     request, 
                     HttpServletResponse.SC_UNAUTHORIZED, 
