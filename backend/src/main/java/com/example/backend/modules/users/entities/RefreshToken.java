@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.entities;
+package com.example.backend.modules.users.entities;
 
 import java.time.LocalDateTime;
 
@@ -34,8 +34,8 @@ public class RefreshToken {
     @Column(name = "expiry_date")
     private LocalDateTime expiryDate;
 
-    @Column(name = "admin_id")
-    private Long adminId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -46,6 +46,6 @@ public class RefreshToken {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", referencedColumnName="id", insertable = false, updatable = false)
-    private Admin admin;
+    @JoinColumn(name = "user_id", referencedColumnName="id", insertable = false, updatable = false)
+    private User user;
 }

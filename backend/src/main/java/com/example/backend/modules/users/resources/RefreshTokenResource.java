@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.resources;
+package com.example.backend.modules.users.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.services.impl;
+package com.example.backend.modules.users.services.impl;
 
 import java.time.ZoneId;
 import java.util.Date;
@@ -6,9 +6,9 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.modules.admins.entities.BlacklistedToken;
-import com.example.backend.modules.admins.repositories.BlacklistedTokenRepository;
-import com.example.backend.modules.admins.requests.BlacklistTokenRequest;
+import com.example.backend.modules.users.entities.BlacklistedToken;
+import com.example.backend.modules.users.repositories.BlacklistedTokenRepository;
+import com.example.backend.modules.users.requests.BlacklistTokenRequest;
 import com.example.backend.resources.MessageResourece;
 import com.example.backend.services.JwtService;
 
@@ -29,12 +29,12 @@ public class BlacklistService {
             }
             Claims claims = jwtService.getAllClaimsFromToken(request.getToken());
 
-            Long adminId = Long.valueOf(claims.getSubject());
+            Long userId = Long.valueOf(claims.getSubject());
 
             Date expiryDate = claims.getExpiration();
             BlacklistedToken blacklistToken = new BlacklistedToken();
             blacklistToken.setToken(request.getToken());
-            blacklistToken.setAdminId(adminId);
+            blacklistToken.setUserId(userId);
             blacklistToken.setExpiryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 
             blacklistedTokenRepository.save(blacklistToken);

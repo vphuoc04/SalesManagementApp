@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.entities;
+package com.example.backend.modules.users.entities;
 
 import java.time.LocalDateTime;
 
@@ -31,8 +31,8 @@ public class BlacklistedToken {
     @Column(name="expiry_date", nullable = false)
     private LocalDateTime expiryDate;
 
-    @Column(name="admin_id")
-    private Long adminId;
+    @Column(name="user_id")
+    private Long userId;
 
     @Column(name = "type")
     private String type;

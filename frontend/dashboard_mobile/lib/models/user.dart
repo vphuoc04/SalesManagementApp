@@ -1,4 +1,4 @@
-class Admin {
+class User {
   final int id;
   final String firstName;
   final String middleName;
@@ -6,7 +6,7 @@ class Admin {
   final String email;
   final String phone;
 
-  Admin({
+  User({
     required this.id,
     required this.firstName,
     required this.middleName,
@@ -15,8 +15,8 @@ class Admin {
     required this.phone
   });
 
-  factory Admin.fromJson(Map<String, dynamic> json) {
-    return Admin(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: json['id'] ?? 0, 
       firstName: json['firstName'] ?? '', 
       middleName: json['middleName'] ?? '', 

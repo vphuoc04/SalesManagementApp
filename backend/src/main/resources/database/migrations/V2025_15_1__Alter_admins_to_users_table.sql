@@ -1,0 +1,1 @@
+RENAME TABLE admins TO users;

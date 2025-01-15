@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.entities;
+package com.example.backend.modules.users.entities;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "admins")
-public class Admin {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

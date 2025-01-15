@@ -14,10 +14,10 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);  
 
-      final adminData = data['admin'];
+      final userData = data['admin'];
 
-      if (adminData == null) {
-        print("Error: Admin data is null.");
+      if (userData == null) {
+        print("Error: Data is null.");
         return {
           'success': false,
           'message': 'Admin data is missing.',
@@ -25,17 +25,17 @@ class AuthService {
       }
 
       print("Token: ${data['token']}");
-      print("Admin id: ${adminData['id']}");
+      print("Admin id: ${userData['id']}");
 
       final sharedPrefs = await SharedPreferences.getInstance();
       await sharedPrefs.setString('token', data['token']);
-      await sharedPrefs.setInt('id', adminData['id']);
+      await sharedPrefs.setInt('id', userData['id']);
 
       return {
         'success': true,
         'token': data['token'],
         'admin': {
-          'id': adminData['id']
+          'id': userData['id']
         },
       };
     } 

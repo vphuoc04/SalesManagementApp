@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.backend.modules.admins.entities.Admin;
-import com.example.backend.modules.admins.repositories.AdminRepository;
+import com.example.backend.modules.users.entities.User;
+import com.example.backend.modules.users.repositories.UserRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,7 +26,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AdminRepository adminRepository;
+    private UserRepository userRepository;
 
     @Transactional
     @Override
@@ -36,21 +36,21 @@ public class DatabaseSeeder implements CommandLineRunner {
         if (isTableEmpty()) {
             String passwordEncode = passwordEncoder.encode("password");
             
-            Admin admin = new Admin();
-            admin.setFirstName("Phước");
-            admin.setMiddleName("Văn");
-            admin.setLastName("Đoàn");
-            admin.setEmail("vphuoc2409@gmail.com");
-            admin.setPassword(passwordEncode);
-            admin.setPhone("0123456789");
-            admin.setImage(null);
+            User user = new User();
+            user.setFirstName("Phước");
+            user.setMiddleName("Văn");
+            user.setLastName("Đoàn");
+            user.setEmail("vphuoc2409@gmail.com");
+            user.setPassword(passwordEncode);
+            user.setPhone("0123456789");
+            user.setImage(null);
 
-            adminRepository.save(admin);
+            userRepository.save(user);
         }
     }
 
     private boolean isTableEmpty() {
-        Long count = (Long) entityManager.createQuery("SELECT COUNT(id) FROM Admin").getSingleResult();
+        Long count = (Long) entityManager.createQuery("SELECT COUNT(id) FROM User").getSingleResult();
         return count == 0;
     }
 }

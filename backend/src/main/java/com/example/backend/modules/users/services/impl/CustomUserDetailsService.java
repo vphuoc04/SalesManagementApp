@@ -1,11 +1,11 @@
-package com.example.backend.modules.admins.services.impl;
+package com.example.backend.modules.users.services.impl;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.modules.admins.entities.Admin;
-import com.example.backend.modules.admins.repositories.AdminRepository;
+import com.example.backend.modules.users.entities.User;
+import com.example.backend.modules.users.repositories.UserRepository;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -15,18 +15,18 @@ import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
-public class CustomAdminDetailsService implements UserDetailsService {
-    private final AdminRepository adminRepository;
+public class CustomUserDetailsService implements UserDetailsService {
+    private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String adminId) throws UsernameNotFoundException {
-        Admin admin = adminRepository.findById(Long.valueOf(adminId)).orElseThrow(
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(
             () -> new UsernameNotFoundException("Admin not found!")
         );
 
         return new org.springframework.security.core.userdetails.User(
-            admin.getEmail(), 
-            admin.getPassword(), 
+            user.getEmail(), 
+            user.getPassword(), 
             Collections.emptyList()
         );
     }

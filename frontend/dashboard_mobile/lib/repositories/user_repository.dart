@@ -1,12 +1,12 @@
 // Services
 import 'package:dashboard_mobile/services/api_service.dart';
 
-class AdminRepository {
+class UserRepository {
   final ApiService apiService = ApiService();
 
-  Future<dynamic> getAdminById(int id, {required String token}) {
+  Future<dynamic> getDataByid(int id, {required String token}) {
     return apiService.get(
-      'admin/$id',
+      'user/$id',
       headers: {'Authorization': 'Bearer $token'}, 
     );
   }

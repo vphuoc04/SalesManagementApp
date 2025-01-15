@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.requests;
+package com.example.backend.modules.users.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

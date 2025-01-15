@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.config.JwtConfig;
-import com.example.backend.modules.admins.entities.RefreshToken;
-import com.example.backend.modules.admins.repositories.BlacklistedTokenRepository;
-import com.example.backend.modules.admins.repositories.RefreshTokenRepository;
+import com.example.backend.modules.users.entities.RefreshToken;
+import com.example.backend.modules.users.repositories.BlacklistedTokenRepository;
+import com.example.backend.modules.users.repositories.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -41,12 +41,12 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(Base64.getEncoder().encode(jwtConfig.getSecretKey().getBytes()));
     }
 
-    public String generateToken(long adminId, String email) {
+    public String generateToken(long userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationTime());
         
         return Jwts.builder()
-            .setSubject(String.valueOf(adminId))
+            .setSubject(String.valueOf(userId))
             .claim("email", email)
             .setIssuer(jwtConfig.getIssuer())
             .setIssuedAt(now)
@@ -55,7 +55,7 @@ public class JwtService {
             .compact();
     }
 
-    public String generateRefreshToken(Long adminId, String email) {
+    public String generateRefreshToken(Long userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationRefreshToken());
 
@@ -63,7 +63,7 @@ public class JwtService {
 
         LocalDateTime localExpiryDate = expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByAdminId(adminId);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserId(userId);
 
         if (optionalRefreshToken.isPresent()) {
             RefreshToken dbRefreshToken = optionalRefreshToken.get();
@@ -77,7 +77,7 @@ public class JwtService {
 
             insertRefreshToken.setRefreshToken(refreshToken);
             insertRefreshToken.setExpiryDate(localExpiryDate);
-            insertRefreshToken.setAdminId(adminId);
+            insertRefreshToken.setUserId(userId);
             refreshTokenRepository.save(insertRefreshToken);
         }
 

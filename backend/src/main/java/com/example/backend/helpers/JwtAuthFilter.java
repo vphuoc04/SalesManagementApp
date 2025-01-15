@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.backend.modules.admins.services.impl.CustomAdminDetailsService;
+import com.example.backend.modules.users.services.impl.CustomUserDetailsService;
 import com.example.backend.services.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final CustomAdminDetailsService customAdminDetailService;
+    private final CustomUserDetailsService customUserDetailService;
     private final ObjectMapper objectMapper;
     
 
@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             final String authHeader = request.getHeader("Authorization");
             final String jwt;
-            final String adminId;
+            final String userId;
     
             if (authHeader == null || !authHeader.startsWith("Bearer ")){
                 sendErrorResponse(
@@ -115,10 +115,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
     
-            adminId = jwtService.getAdminIdFromJwt(jwt);
+            userId = jwtService.getAdminIdFromJwt(jwt);
     
-            if (adminId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = customAdminDetailService.loadUserByUsername(adminId);
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = customUserDetailService.loadUserByUsername(userId);
 
                 final String emailFromToken = jwtService.getEmailFromJwt(jwt);
                 if (!emailFromToken.equals(userDetails.getUsername())){

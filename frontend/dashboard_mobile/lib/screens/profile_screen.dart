@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Models
-import 'package:dashboard_mobile/models/admin.dart';
+import 'package:dashboard_mobile/models/user.dart';
 
 // Services
 import 'package:dashboard_mobile/services/auth_service.dart';
-import 'package:dashboard_mobile/services/admin_service.dart';
+import 'package:dashboard_mobile/services/user_service.dart';
 
 // Screens
 import 'package:dashboard_mobile/screens/login_screen.dart';
@@ -17,48 +17,48 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final AdminService adminService = AdminService();
+  final UserService userService = UserService();
   final AuthService authService = AuthService();
 
-  Admin? adminData;
+  User? data;
 
   @override
   void initState() {
     super.initState();
-    fetchAdminData();
+    fetchDataById();
   }
 
-  Future<void> fetchAdminData() async {
+  Future<void> fetchDataById() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-      int? adminId = prefs.getInt('id');
+      int? userId = prefs.getInt('id');
 
       if (token == null || token.isEmpty) {
         print("Error: Token not found in SharedPreferences!");
         setState(() {
-          adminData = null; 
+          data = null; 
         });
         return;
       }
 
-      if (adminId == null) {
+      if (userId == null) {
         print("Error: Admin ID not found in SharedPreferences!");
         setState(() {
-          adminData = null; 
+          data = null; 
         });
         return;
       }
 
-      print("Fetching admin data for ID: $adminId with Token: $token");
-      final Admin result = await adminService.getAdminById(adminId);
+      print("Fetching data for ID: $userId with Token: $token");
+      final User result = await userService.getDataById(userId);
       setState(() {
-        adminData = result; 
+        data = result; 
       });
     } catch (error) {
-      print("Error getting admin data: $error");
+      print("Error getting data: $error");
       setState(() {
-        adminData = null;  
+        data = null;  
       });
     }
   }
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: adminData == null
+        child: data == null
             ? Center(
                 child: Text("No admin data available."),
               )
@@ -77,11 +77,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     SizedBox(height: 20),
                     Text(
-                      "${adminData!.middleName} ${adminData!.firstName}",
+                      "${data!.middleName} ${data!.firstName}",
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Text("Email: ${adminData!.email}"),
-                    Text("Phone: ${adminData!.phone}"),
+                    Text("Email: ${data!.email}"),
+                    Text("Phone: ${data!.phone}"),
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () async {

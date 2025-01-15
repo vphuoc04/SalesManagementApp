@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.resources;
+package com.example.backend.modules.users.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AdminResource {
+public class UserResource {
     private final Long id;
     private final String email;
     private final String firstName;

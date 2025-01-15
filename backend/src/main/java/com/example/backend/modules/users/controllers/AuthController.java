@@ -1,4 +1,4 @@
-package com.example.backend.modules.admins.controllers;
+package com.example.backend.modules.users.controllers;
 
 import java.util.Optional;
 
@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.modules.admins.entities.RefreshToken;
-import com.example.backend.modules.admins.repositories.RefreshTokenRepository;
-import com.example.backend.modules.admins.requests.BlacklistTokenRequest;
-import com.example.backend.modules.admins.requests.LoginRequest;
-import com.example.backend.modules.admins.requests.RefreshTokenRequest;
-import com.example.backend.modules.admins.resources.LoginResource;
-import com.example.backend.modules.admins.resources.RefreshTokenResource;
-import com.example.backend.modules.admins.services.impl.BlacklistService;
-import com.example.backend.modules.admins.services.interfaces.AdminServiceInterface;
+import com.example.backend.modules.users.entities.RefreshToken;
+import com.example.backend.modules.users.repositories.RefreshTokenRepository;
+import com.example.backend.modules.users.requests.BlacklistTokenRequest;
+import com.example.backend.modules.users.requests.LoginRequest;
+import com.example.backend.modules.users.requests.RefreshTokenRequest;
+import com.example.backend.modules.users.resources.LoginResource;
+import com.example.backend.modules.users.resources.RefreshTokenResource;
+import com.example.backend.modules.users.services.impl.BlacklistService;
+import com.example.backend.modules.users.services.interfaces.UserServiceInterface;
 import com.example.backend.resources.MessageResourece;
 import com.example.backend.resources.ResponseResource;
 import com.example.backend.services.JwtService;
@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthController {
-    private final AdminServiceInterface adminService;
+    private final UserServiceInterface userService;
 
     @Autowired
     private BlacklistService blacklistService;
@@ -44,14 +44,14 @@ public class AuthController {
     private RefreshTokenRepository refreshTokenRepository;
 
     public AuthController(
-        AdminServiceInterface adminService
+        UserServiceInterface userService
     ){
-        this.adminService = adminService;
+        this.userService = userService;
     }
 
     @PostMapping("login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        Object result = adminService.authenticate(request);
+        Object result = userService.authenticate(request);
 
         if(result instanceof LoginResource loginResource) {
             return ResponseEntity.ok(loginResource);
@@ -102,11 +102,11 @@ public class AuthController {
 
         if(dbRefreshTokenOptional.isPresent()) {
             RefreshToken dbRefreshToken = dbRefreshTokenOptional.get();
-            Long adminId = dbRefreshToken.getAdminId();
-            String email = dbRefreshToken.getAdmin().getEmail();
+            Long userId = dbRefreshToken.getUserId();
+            String email = dbRefreshToken.getUser().getEmail();
 
-            String newToken = jwtService.generateToken(adminId, email);
-            String newRefreshToken = jwtService.generateRefreshToken(adminId, email);
+            String newToken = jwtService.generateToken(userId, email);
+            String newRefreshToken = jwtService.generateRefreshToken(userId, email);
 
             return ResponseEntity.ok(new RefreshTokenResource(newToken, newRefreshToken));
         }
