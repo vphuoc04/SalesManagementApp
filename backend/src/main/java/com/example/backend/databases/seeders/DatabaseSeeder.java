@@ -44,6 +44,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             user.setPassword(passwordEncode);
             user.setPhone("0123456789");
             user.setImage(null);
+            user.setCatalogueId(1L);
 
             userRepository.save(user);
         }

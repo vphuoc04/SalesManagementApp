@@ -95,7 +95,7 @@ class SidebarItem extends StatelessWidget {
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: isExpanded ? 280 : 0, 
+              width: isExpanded ? 280 : 0.05, 
               height: 50,
               decoration: BoxDecoration(
                 color: isSelected && isExpanded ? Colors.white : Colors.transparent, 

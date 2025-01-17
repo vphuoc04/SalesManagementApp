@@ -14,18 +14,18 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);  
 
-      final userData = data['admin'];
+      final userData = data['user'];
 
       if (userData == null) {
         print("Error: Data is null.");
         return {
           'success': false,
-          'message': 'Admin data is missing.',
+          'message': 'User data is missing.',
         };
       }
 
       print("Token: ${data['token']}");
-      print("Admin id: ${userData['id']}");
+      print("Id: ${userData['id']}");
 
       final sharedPrefs = await SharedPreferences.getInstance();
       await sharedPrefs.setString('token', data['token']);
