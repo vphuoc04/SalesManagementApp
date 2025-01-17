@@ -1,16 +1,11 @@
 package com.example.backend.modules.users.services.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.databases.seeders.DatabaseSeeder;
 import com.example.backend.modules.users.entities.User;
 import com.example.backend.modules.users.repositories.UserRepository;
 import com.example.backend.modules.users.requests.LoginRequest;
@@ -23,7 +18,6 @@ import com.example.backend.services.JwtService;
 
 @Service
 public class UserService extends BaseService implements UserServiceInterface {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     @Autowired
     private JwtService jwtService;
@@ -57,12 +51,7 @@ public class UserService extends BaseService implements UserServiceInterface {
 
             return new LoginResource(token, refreshToken, userResource);
         } catch (BadCredentialsException e) {
-            logger.error("Authentication error: " + e.getMessage());
-            Map<String, String> errors = new HashMap<>();
-            errors.put("Message: ", e.getMessage());
-            ResponseResource responseResource = new ResponseResource("Error: ", errors);
-
-            return responseResource;
+            return ResponseResource.error("AUTH_ERROR", e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

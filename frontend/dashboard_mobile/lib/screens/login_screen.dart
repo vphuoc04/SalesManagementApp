@@ -92,8 +92,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
         );
 
         print('Login successful: $token');
-      } 
-      else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -108,8 +107,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
         });
         print('Login failed: ${result['message']}');
       }
-    } 
-    catch (error) {
+    } catch (error) {
       print('Error occurred: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(genericErrorMessage)),

@@ -12,15 +12,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   String? token = await TokenService.loadToken();
-  int? adminId;
+  int? id;
 
   if (token != null) {
     final check = await SharedPreferences.getInstance();
-    adminId = check.getInt('id');
-    print('Admin id check: $adminId');
+    id = check.getInt('id');
+    print('Admin id check: $id');
   }
 
-  runApp(MyApp(initialRoute: token == null ? '/' : '/dashboard', id: adminId));
+  runApp(MyApp(initialRoute: token == null ? '/' : '/dashboard', id: id));
 }
 
 class MyApp extends StatelessWidget {

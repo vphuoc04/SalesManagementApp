@@ -1,4 +1,4 @@
-package com.example.backend.helpers;
+package com.example.backend.exceptions;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +24,7 @@ public class GlobalExceptionHandle {
             errors.put(fieldName, errorMessage);
         });
 
-        ResponseResource responseResource = new ResponseResource("Error: ", errors);
+        ResponseResource responseResource = ResponseResource.message("Network error!", HttpStatus.UNAUTHORIZED);
 
         return new ResponseEntity<>(responseResource, HttpStatus.UNPROCESSABLE_ENTITY);
     }

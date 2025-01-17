@@ -22,7 +22,6 @@ import com.example.backend.modules.users.resources.LoginResource;
 import com.example.backend.modules.users.resources.RefreshTokenResource;
 import com.example.backend.modules.users.services.impl.BlacklistService;
 import com.example.backend.modules.users.services.interfaces.UserServiceInterface;
-import com.example.backend.resources.MessageResourece;
 import com.example.backend.resources.ResponseResource;
 import com.example.backend.services.JwtService;
 
@@ -54,11 +53,12 @@ public class AuthController {
         Object result = userService.authenticate(request);
 
         if(result instanceof LoginResource loginResource) {
-            return ResponseEntity.ok(loginResource);
+            ResponseResource<LoginResource> response = ResponseResource.ok(loginResource, "SUCCESS");
+            return ResponseEntity.ok(response);
         }
 
-        if(result instanceof ResponseResource responseResource) {
-            return ResponseEntity.unprocessableEntity().body(responseResource);
+        if(result instanceof ResponseResource errorResource) {
+            return ResponseEntity.unprocessableEntity().body(errorResource);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Network errors");
@@ -71,7 +71,7 @@ public class AuthController {
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new MessageResourece("Network error!"));
+            return ResponseEntity.internalServerError().body(ResponseResource.message("Network error!", HttpStatus.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -86,7 +86,7 @@ public class AuthController {
             Object message = blacklistService.create(request);
             return ResponseEntity.ok(message);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new MessageResourece("Network error!"));
+            return ResponseEntity.internalServerError().body(ResponseResource.message("Network error!", HttpStatus.UNAUTHORIZED));
         }
     }
 
@@ -95,7 +95,7 @@ public class AuthController {
         String refreshToken = request.getRefreshToken();
 
         if(!jwtService.isRefreshTokenValid(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResourece("Refresh token is invalid!"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseResource.message("Refresh token is invalid!", HttpStatus.UNAUTHORIZED));
         }
 
         Optional<RefreshToken> dbRefreshTokenOptional = refreshTokenRepository.findByRefreshToken(refreshToken);
@@ -110,6 +110,6 @@ public class AuthController {
 
             return ResponseEntity.ok(new RefreshTokenResource(newToken, newRefreshToken));
         }
-        return ResponseEntity.internalServerError().body(new MessageResourece("Network error!"));
+        return ResponseEntity.internalServerError().body(ResponseResource.message("Network Error!", HttpStatus.INTERNAL_SERVER_ERROR));
     } 
 }

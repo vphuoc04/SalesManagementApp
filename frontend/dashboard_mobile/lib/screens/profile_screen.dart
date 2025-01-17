@@ -69,7 +69,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: data == null
             ? Center(
-                child: Text("No admin data available."),
+                child: Column(
+                  children: [
+                    Text("No admin data available."),
+                    ElevatedButton(
+                      onPressed: () async {
+                        bool logoutSuccess = await authService.logout();
+                        if (logoutSuccess) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Logout failed. Please try again.")),
+                          );
+                        }
+                      },
+                      child: Text('Logout'),
+                    ),
+                  ],
+                ),
               )
             : Center(
                 child: Column(
@@ -83,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text("Email: ${data!.email}"),
                     Text("Phone: ${data!.phone}"),
                     SizedBox(height: 20),
-                    ElevatedButton(
+                                        ElevatedButton(
                       onPressed: () async {
                         bool logoutSuccess = await authService.logout();
                         if (logoutSuccess) {

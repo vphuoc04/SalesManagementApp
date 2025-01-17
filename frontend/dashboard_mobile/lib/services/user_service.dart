@@ -36,11 +36,11 @@ class UserService {
         return User.fromJson(userData);
       } else {
         final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Failed to load admin data!');
+        throw Exception(errorData['message'] ?? 'Failed to load user data!');
       }
     } catch (error) {
       print("Error in user.getAdminById: $error");
-      throw Exception('An error occurred while fetching admin data!');
+      throw Exception('An error occurred while fetching user data!');
     }
   }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.modules.users.entities.User;
 import com.example.backend.modules.users.repositories.UserRepository;
 import com.example.backend.modules.users.resources.UserResource;
-import com.example.backend.resources.SuccessResource;
+import com.example.backend.resources.ResponseResource;
 
 @RestController
 @RequestMapping("api/v1")
@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity<?> admin(@PathVariable("id") Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found!"));
 
-        UserResource adminResource = UserResource.builder()
+        UserResource userResource = UserResource.builder()
             .id(user.getId())
             .email(user.getEmail())
             .firstName(user.getFirstName())
@@ -32,7 +32,7 @@ public class UserController {
             .phone(user.getPhone())
             .build();
 
-        SuccessResource<UserResource> response = new SuccessResource<>("Success", adminResource);
+        ResponseResource<UserResource> response = ResponseResource.ok(userResource, "SUCCESS");
 
         return ResponseEntity.ok(response);
     }

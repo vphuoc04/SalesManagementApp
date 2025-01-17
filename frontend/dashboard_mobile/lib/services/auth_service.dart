@@ -12,44 +12,48 @@ class AuthService {
     final response = await authRepository.login(email, password);
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);  
+      final data = json.decode(response.body);
 
-      final userData = data['user'];
+      print("Decoded Response Data: $data");
 
-      if (userData == null) {
-        print("Error: Data is null.");
+      if (data['data'] == null) {
+        print("Error: 'data' is null.");
         return {
           'success': false,
-          'message': 'User data is missing.',
+          'message': 'Invalid response structure.',
         };
       }
 
-      print("Token: ${data['token']}");
-      print("Id: ${userData['id']}");
+      final token = data['data']['token'];
+      final userData = data['data']['user'];
+
+      if (token == null || userData == null) {
+        print("Error: Token or User data is missing.");
+        return {
+          'success': false,
+          'message': 'Missing token or user data.',
+        };
+      }
+
+      print("Token: $token");
+      print("User ID: ${userData['id']}");
 
       final sharedPrefs = await SharedPreferences.getInstance();
-      await sharedPrefs.setString('token', data['token']);
+      await sharedPrefs.setString('token', token);
       await sharedPrefs.setInt('id', userData['id']);
 
       return {
         'success': true,
-        'token': data['token'],
-        'admin': {
+        'token': token,
+        'user': {
           'id': userData['id']
         },
       };
-    } 
-    else if (response.statusCode == 422) {
-      final error = json.decode(response.body);
+    } else {
+      print("Error: HTTP ${response.statusCode}");
       return {
         'success': false,
-        'message': error['errors']['message'],
-      };
-    } 
-    else {
-      return {
-        'success': false,
-        'message': 'Unexpected error occurred',
+        'message': 'Unexpected error occurred.',
       };
     }
   }
