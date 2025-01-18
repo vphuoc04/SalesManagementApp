@@ -105,7 +105,7 @@ public class AuthController {
             Long userId = dbRefreshToken.getUserId();
             String email = dbRefreshToken.getUser().getEmail();
 
-            String newToken = jwtService.generateToken(userId, email);
+            String newToken = jwtService.generateToken(userId, email, null);
             String newRefreshToken = jwtService.generateRefreshToken(userId, email);
 
             return ResponseEntity.ok(new RefreshTokenResource(newToken, newRefreshToken));
