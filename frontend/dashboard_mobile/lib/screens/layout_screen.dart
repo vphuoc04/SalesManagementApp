@@ -5,7 +5,7 @@ import 'package:dashboard_mobile/screens/dashboard_screen.dart';
 import 'package:dashboard_mobile/screens/profile_screen.dart';
 
 // Components
-import 'package:dashboard_mobile/widgets/layout/custom_sidebar.dart';
+import 'package:dashboard_mobile/components/layout/custom_sidebar.dart';
 
 class LayoutScreen extends StatefulWidget {
   final int? id;

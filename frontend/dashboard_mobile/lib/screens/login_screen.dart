@@ -12,8 +12,8 @@ import 'package:dashboard_mobile/constants/strings.dart';
 import 'package:dashboard_mobile/constants/colors.dart';
 
 // Components
-import 'package:dashboard_mobile/widgets/login/login_input.dart';
-import 'package:dashboard_mobile/widgets/login/login_button.dart';
+import 'package:dashboard_mobile/components/login/login_input.dart';
+import 'package:dashboard_mobile/components/login/login_button.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -26,6 +26,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
   final AuthService authService = AuthService();
 
   bool keyboardVisible = false;
+  bool isLoading = false;
   late AnimationController animationController;
   late Animation<double> animation;
 
@@ -68,7 +69,12 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
       return;
     }
 
+    setState(() {
+      isLoading = true;
+    });
+
     try {
+      await Future.delayed(Duration(seconds: 2)); 
       final result = await authService.login(email, password);
 
       if (result['success']) {
@@ -159,6 +165,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
                   padding: EdgeInsets.only(top: keyboardVisible ? 12 : 18), 
                   duration: const Duration(milliseconds: 200),
                   child: LoginButton(
+                    isLoading: isLoading,
                     onTap: () => login(context),
                   ),
                 )

@@ -1,3 +1,4 @@
+import 'package:dashboard_mobile/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,9 @@ import 'package:dashboard_mobile/services/user_service.dart';
 // Screens
 import 'package:dashboard_mobile/screens/login_screen.dart';
 
+// Widgets
+import 'package:dashboard_mobile/widgets/loading_widget.dart';  
+
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -21,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService authService = AuthService();
 
   User? data;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -29,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> fetchDataById() async {
+    await Future.delayed(Duration(seconds: 2)); 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
@@ -38,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         print("Error: Token not found in SharedPreferences!");
         setState(() {
           data = null; 
+          isLoading = false;  
         });
         return;
       }
@@ -46,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         print("Error: Admin ID not found in SharedPreferences!");
         setState(() {
           data = null; 
+          isLoading = false;  
         });
         return;
       }
@@ -54,11 +62,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final User result = await userService.getDataById(userId);
       setState(() {
         data = result; 
+        isLoading = false;  
       });
     } catch (error) {
       print("Error getting data: $error");
       setState(() {
         data = null;  
+        isLoading = false;  
       });
     }
   }
@@ -67,61 +77,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: data == null
+        child: isLoading
             ? Center(
-                child: Column(
-                  children: [
-                    Text("No admin data available."),
-                    ElevatedButton(
-                      onPressed: () async {
-                        bool logoutSuccess = await authService.logout();
-                        if (logoutSuccess) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Logout failed. Please try again.")),
-                          );
-                        }
-                      },
-                      child: Text('Logout'),
-                    ),
-                  ],
-                ),
+                child: LoadingWidget(color: myColor),  
               )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Text(
-                      "${data!.middleName} ${data!.firstName}",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            : data == null
+                ? Center(
+                    child: Column(
+                      children: [
+                        Text("No admin data available."),
+                        ElevatedButton(
+                          onPressed: () async {
+                            bool logoutSuccess = await authService.logout();
+                            if (logoutSuccess) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => LoginScreen()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Logout failed. Please try again.")),
+                              );
+                            }
+                          },
+                          child: Text('Logout'),
+                        ),
+                      ],
                     ),
-                    Text("Email: ${data!.email}"),
-                    Text("Phone: ${data!.phone}"),
-                    SizedBox(height: 20),
-                                        ElevatedButton(
-                      onPressed: () async {
-                        bool logoutSuccess = await authService.logout();
-                        if (logoutSuccess) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Logout failed. Please try again.")),
-                          );
-                        }
-                      },
-                      child: Text('Logout'),
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          "${data!.middleName} ${data!.firstName}",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Text("Email: ${data!.email}"),
+                        Text("Phone: ${data!.phone}"),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () async {
+                            bool logoutSuccess = await authService.logout();
+                            if (logoutSuccess) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => LoginScreen()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Logout failed. Please try again.")),
+                              );
+                            }
+                          },
+                          child: Text('Logout'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
       ),
     );
   }
