@@ -20,7 +20,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("user/{id}")
-    public ResponseEntity<?> admin(@PathVariable("id") Long id) {
+    public ResponseEntity<?> user(@PathVariable("id") Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found!"));
 
         UserResource userResource = UserResource.builder()

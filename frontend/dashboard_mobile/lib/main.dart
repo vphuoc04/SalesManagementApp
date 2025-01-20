@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Services
 import 'package:dashboard_mobile/services/token_service.dart';
+import 'package:dashboard_mobile/services/auth_service.dart'; 
 
 // Screens
 import 'package:dashboard_mobile/screens/login_screen.dart';
@@ -15,9 +16,16 @@ void main() async {
   int? id;
 
   if (token != null) {
-    final check = await SharedPreferences.getInstance();
-    id = check.getInt('id');
-    print('Admin id check: $id');
+    final authService = AuthService();
+    final isRefreshed = await authService.refreshToken();  
+
+    if (!isRefreshed) {
+      token = null;
+    } else {
+      final check = await SharedPreferences.getInstance();
+      id = check.getInt('id');
+      print('Admin id check: $id');
+    }
   }
 
   runApp(MyApp(initialRoute: token == null ? '/' : '/dashboard', id: id));

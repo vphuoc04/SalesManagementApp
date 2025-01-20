@@ -25,6 +25,7 @@ class AuthService {
       }
 
       final token = data['data']['token'];
+      final refreshToken = data['data']['refreshToken'];
       final userData = data['data']['user'];
 
       if (token == null || userData == null) {
@@ -36,6 +37,7 @@ class AuthService {
       }
 
       print("Token: $token");
+      print("Refresh token: $refreshToken");
       print("User ID: ${userData['id']}");
 
       final sharedPrefs = await SharedPreferences.getInstance();
@@ -45,6 +47,7 @@ class AuthService {
       return {
         'success': true,
         'token': token,
+        'refreshToken': refreshToken,
         'user': {
           'id': userData['id']
         },
@@ -82,6 +85,49 @@ class AuthService {
       }
     } catch (error) {
       print("Error during logout: $error");
+      return false;
+    }
+  }
+
+  //Refresh token
+  Future<bool> refreshToken() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String? oldToken = sharedPrefs.getString('token'); 
+    String? refreshToken = sharedPrefs.getString('refreshToken');
+
+    if (refreshToken == null || refreshToken.isEmpty) {
+      print("No refresh token available.");
+      return false;
+    }
+
+    try {
+      if (oldToken != null && oldToken.isNotEmpty) {
+        final blacklistResponse = await authRepository.blacklistToken(oldToken);
+        if (blacklistResponse.statusCode != 200) {
+          print("Failed to blacklist old token: ${blacklistResponse.body}");
+          return false;
+        }
+        print("Old token blacklisted successfully.");
+      }
+
+      final response = await authRepository.refreshToken(refreshToken);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final newToken = data['token'];
+        final newRefreshToken = data['refreshToken'];
+
+        await sharedPrefs.setString('token', newToken);
+        await sharedPrefs.setString('refreshToken', newRefreshToken);
+
+        print("Access token refreshed successfully.");
+        return true;
+      } else {
+        print("Failed to refresh access token: ${response.body}");
+        return false;
+      }
+    } catch (error) {
+      print("Error during token refresh: $error");
       return false;
     }
   }

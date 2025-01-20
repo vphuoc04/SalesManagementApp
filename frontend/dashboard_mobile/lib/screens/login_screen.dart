@@ -79,7 +79,8 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
 
       if (result['success']) {
         String token = result['token'];
-        await TokenService.setToken(token);
+        String refreshToken = result['refreshToken'];
+        await TokenService.setToken(token, refreshToken);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -97,7 +98,7 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
           MaterialPageRoute(builder: (context) => LayoutScreen(id: id)),
         );
 
-        print('Login successful: $token');
+        print('Login successful: Token: $token, Refresh token: $refreshToken');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

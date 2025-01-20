@@ -2,12 +2,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenService {
   static String tokenKey = 'token';
+  static String refreshTokenKey = 'refreshToken';
 
   // Set token
-  static Future<void> setToken(String token) async {
+  static Future<void> setToken(String token, String refreshToken) async {
     final set = await SharedPreferences.getInstance();
     await set.setString(tokenKey, token);
+    await set.setString(refreshTokenKey, refreshToken);
     print("Token saved: $token");
+    print("Refresh token saved: $refreshToken");
   }
 
   // Load token
