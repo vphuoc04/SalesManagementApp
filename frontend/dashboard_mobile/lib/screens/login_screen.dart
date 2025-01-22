@@ -66,6 +66,11 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
       Future.delayed(Duration(milliseconds: 1000), () {
         ScaffoldMessenger.of(context).clearSnackBars();
       });
+
+      setState(() {
+        isLoading = false;
+      });
+
       return;
     }
 
@@ -112,6 +117,11 @@ class _LoginState extends State<LoginScreen> with SingleTickerProviderStateMixin
         Future.delayed(Duration(milliseconds: 1000), () {
           ScaffoldMessenger.of(context).clearSnackBars();
         });
+
+        setState(() {
+          isLoading = false;
+        });
+
         print('Login failed: ${result['message']}');
       }
     } catch (error) {

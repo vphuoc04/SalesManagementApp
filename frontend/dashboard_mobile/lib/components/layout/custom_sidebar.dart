@@ -57,10 +57,17 @@ class _CustomSidebarState extends State<CustomSidebar> {
             isExpanded: isExpanded, 
           ),
           SidebarItem(
+            icon: IconlyLight.category, 
+            label: 'Categories', 
+            isSelected: widget.selectedIndex == 1, 
+            onTap: () => handleItemTap(1), 
+            isExpanded: isExpanded
+          ),
+          SidebarItem(
             icon: IconlyLight.profile,
             label: 'Profile',
-            isSelected: widget.selectedIndex == 1,
-            onTap: () => handleItemTap(1),
+            isSelected: widget.selectedIndex == 2,
+            onTap: () => handleItemTap(2),
             isExpanded: isExpanded, 
           ),
         ]

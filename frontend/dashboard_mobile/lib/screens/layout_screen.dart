@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Screens
 import 'package:dashboard_mobile/screens/dashboard_screen.dart';
 import 'package:dashboard_mobile/screens/profile_screen.dart';
+import 'package:dashboard_mobile/screens/catagories_screen.dart';
 
 // Components
 import 'package:dashboard_mobile/components/layout/custom_sidebar.dart';
@@ -25,6 +26,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
     super.initState();
     screens = <Widget>[
       DashboardScreen(),
+      ManagementScreen(),
       ProfileScreen(),
     ];
   }

@@ -13,7 +13,7 @@ class ApiService {
   Future<http.Response> post(
     String endpoint,
     Map<String, dynamic> body, {
-    Map<String, String>? extraHeaders,
+    Map<String, String>? headers,
   }) async {
     final Uri url = urls(endpoint);
 
@@ -22,7 +22,7 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
-        if (extraHeaders != null) ...extraHeaders, 
+        if (headers != null) ...headers, 
       },
       body: json.encode(body),
     );

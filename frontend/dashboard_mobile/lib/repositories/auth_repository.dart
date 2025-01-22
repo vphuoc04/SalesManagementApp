@@ -19,7 +19,7 @@ class AuthRepository {
     return apiService.post(
       'auth/blacklisted_tokens',
       {'token': token},
-      extraHeaders: {
+      headers: {
         'Authorization': 'Bearer $token'
       },
     );
