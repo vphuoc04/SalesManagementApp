@@ -44,4 +44,23 @@ class ApiService {
       },
     );
   }
+
+  // Put method
+  Future<http.Response> put(
+    String endpoint,
+    Map<String, dynamic> body, {
+    Map<String, String>? headers
+  }) async {
+    final Uri url = urls(endpoint);
+
+    return await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+        if (headers != null) ...headers,
+      },
+      body: json.encode(body),
+    );
+  }
 }

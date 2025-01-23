@@ -14,4 +14,25 @@ class UserCataloguesRepository {
       }
     );
   }
+
+  Future<dynamic> update(int id, String name, int publish, {required String token}) {
+    return apiService.put(
+      'user_catalogues/$id', {
+        'name': name,
+        'publish': publish
+      },
+      headers: {
+        'Authorization': 'Bearer $token',
+      }
+    );
+  }
+
+  Future<dynamic> get({required String token}) {
+    return apiService.get(
+      'user_catalogues',
+      headers: {
+        'Authorization': 'Bearer $token'
+      }, 
+    );
+  }
 }
