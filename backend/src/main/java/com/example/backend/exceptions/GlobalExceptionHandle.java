@@ -24,8 +24,13 @@ public class GlobalExceptionHandle {
             errors.put(fieldName, errorMessage);
         });
 
-        ResponseResource responseResource = ResponseResource.message("Network error!", HttpStatus.UNAUTHORIZED);
+        ResponseResource<Map<String, String>> errorDetails = ResponseResource.<Map<String, String>>builder()
+            .success(false)
+            .message("Have error.")
+            .errors(errors)
+            .status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .build();
 
-        return new ResponseEntity<>(responseResource, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

@@ -17,6 +17,7 @@ public class ResponseResource<T> {
     private HttpStatus status;
     private LocalDateTime timestamp;
     private ErrorResource error;
+    private T errors;
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -68,6 +69,12 @@ public class ResponseResource<T> {
 
         public Builder<T> data(T data) {
             resource.data = data;
+            return this;
+        }
+
+        public Builder<T> errors(T errors) {
+            resource.errors = errors;
+            resource.data = null;
             return this;
         }
 
