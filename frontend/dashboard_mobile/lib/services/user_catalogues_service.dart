@@ -71,6 +71,32 @@ class UserCataloguesService {
     }
   }
 
+  Future<Map<String, dynamic>> delete(int id) async {
+    String? token = await TokenService.loadToken();
+
+    if (token == null) {
+      throw Exception('Token is null. Please log in again.');
+    }
+
+    try {
+      final response = await userCataloguesRepository.delete(id, token: token);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("Delete successful: $data");
+        return data;
+      }
+
+      print("Delete failed with status: ${response.body}");
+      return {
+        'success': false,
+        'message': 'Failed to delete group!'
+      };
+    } catch (error) {
+      print("Error deleting group: $error");
+      throw Exception("Error: $error");
+    }
+  }
 
   Future<List<UserCatalogues>> getAll() async {
     String? token = await TokenService.loadToken();

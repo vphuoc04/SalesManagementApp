@@ -46,4 +46,14 @@ public class UserCataloguesService extends BaseService implements UserCatalogues
 
         return userCataloguesRepository.save(payload);
     }
+
+    @Override
+    @Transactional
+    public boolean delete(Long id) {
+        UserCatalogues userCatalogues = userCataloguesRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("User group does not exist"));
+
+        userCataloguesRepository.delete(userCatalogues);
+        return true;
+    }
 }

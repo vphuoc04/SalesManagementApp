@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 
 // Services
 import 'package:dashboard_mobile/services/user_catalogues_service.dart';
@@ -136,6 +137,55 @@ class _UserCataloguesManagementState extends State<UserCataloguesManagement> {
     }
   }
 
+  // Delete user catalogues
+  void confirmDelete(int groupId, String groupName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Group"),
+          content: Text("Are you sure you want to delete the group '$groupName'?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Đóng dialog
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+                deleteGroup(groupId); // Xóa nhóm
+              },
+              child: Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> deleteGroup(int groupId) async {
+    setState(() {
+      isLoading = true; 
+    });
+
+    try {
+      final response = await userCataloguesService.delete(groupId);
+
+      if (response['success'] == true) {
+        showSuccess("Group deleted successfully!");
+        await loadUserCatalogues(); 
+      } else {
+        showError(response['message'] ?? "Failed to delete group");
+      }
+    } catch (error) {
+      showError("Error: $error");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void clearInputs() {
     setState(() {
       currentGroupId = null;
@@ -209,6 +259,10 @@ class _UserCataloguesManagementState extends State<UserCataloguesManagement> {
                           title: Text(group.name),
                           subtitle: Text(group.publish == 1 ? "Active" : group.publish == 0 ? "Inactive" : "Archived"),
                           onTap: () => onGroupTap(group),
+                          trailing: IconButton(
+                            onPressed: () => confirmDelete(group.id, group.name), 
+                            icon: Icon(IconlyLight.delete, color: Color.fromRGBO(255, 0, 0, 1))
+                          ),
                         );
                       },
                     ),

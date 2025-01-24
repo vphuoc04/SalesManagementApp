@@ -27,6 +27,15 @@ class UserCataloguesRepository {
     );
   }
 
+  Future<dynamic> delete(int id, {required String token}) {
+    return apiService.delete(
+      'user_catalogues/$id',
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   Future<dynamic> get({required String token}) {
     return apiService.get(
       'user_catalogues',

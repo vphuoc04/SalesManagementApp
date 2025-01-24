@@ -63,4 +63,21 @@ class ApiService {
       body: json.encode(body),
     );
   }
+
+  // Delete method
+  Future<http.Response> delete(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    final Uri url = urls(endpoint);
+
+    return await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+        if (headers != null) ...headers,
+      },
+    );
+  }
 }

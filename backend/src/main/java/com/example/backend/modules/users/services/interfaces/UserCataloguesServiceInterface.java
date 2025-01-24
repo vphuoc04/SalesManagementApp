@@ -7,4 +7,5 @@ import com.example.backend.modules.users.requests.UserCatalogues.UpdateRequest;
 public interface UserCataloguesServiceInterface {
    UserCatalogues create(StoreRequest request);
    UserCatalogues update(Long id, UpdateRequest request);
+   boolean delete(Long id);
 }

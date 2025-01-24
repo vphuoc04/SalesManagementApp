@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +76,32 @@ public class UserCataloguesController {
             ResponseResource<UserCataloguesResource> response = ResponseResource.ok(userCataloguesResource, "User group updated successfully");
 
             return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseResource.error("NOT_FOUND", e.getMessage(), HttpStatus.NOT_FOUND)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseResource.error("NTERNAL_SERVER_ERROR", "Error: ", HttpStatus.INTERNAL_SERVER_ERROR)
+            );
+        }
+    }
+    
+    @DeleteMapping("/user_catalogues/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        try {
+            boolean deleted = userCatagoluesService.delete(id);
+
+            if (deleted) {
+                return ResponseEntity.ok(
+                    ResponseResource.message("Group deleted successfully!", HttpStatus.OK)
+                );
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ResponseResource.error("NOT_FOUND", "Group not found!", HttpStatus.NOT_FOUND)
+                );
+            }
+
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseResource.error("NOT_FOUND", e.getMessage(), HttpStatus.NOT_FOUND)
